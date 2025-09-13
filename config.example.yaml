@@ -1,0 +1,61 @@
+# UnifyDialog Configuration File
+# This file configures the improved unified dialog system
+
+# Model provider: openai, deepseek, claude, mock
+model_provider: mock
+
+# OpenAI Configuration
+openai:
+  base_url: https://api.openai.com/v1
+  api_key: ${OPENAI_API_KEY}
+  model: gpt-4o-mini
+
+# DeepSeek Configuration
+deepseek:
+  base_url: https://api.deepseek.com/v1
+  api_key: ${DEEPSEEK_API_KEY}
+  model: deepseek-chat
+
+# Claude Configuration
+claude:
+  base_url: https://api.anthropic.com/v1
+  api_key: ${CLAUDE_API_KEY}
+  model: claude-3-sonnet-20240229
+
+# MCP Configuration
+mcp:
+  enabled: false
+  servers:
+    filesystem:
+      command: python
+      args: ["-m", "mcp_server_filesystem"]
+      env:
+        MCP_SERVER_PORT: "3000"
+    database:
+      command: python
+      args: ["-m", "mcp_server_database"]
+      env:
+        DATABASE_URL: "postgresql://localhost/mydb"
+
+# Model Parameters
+temperature: 0.7
+max_tokens: 2000
+top_p: 0.9
+
+# System Configuration
+system:
+  debug: true
+  enable_callbacks: true
+  log_level: info
+
+# Callback Configuration
+callbacks:
+  cozeloop:
+    enabled: false
+    api_token: ${COZELOOP_API_TOKEN}
+    workspace_id: ${COZELOOP_WORKSPACE_ID}
+
+  langsmith:
+    enabled: false
+    api_key: ${LANGSMITH_API_KEY}
+    endpoint: https://api.smith.langchain.com
