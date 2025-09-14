@@ -12,7 +12,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// MultiAgentOrchestrator implements the official multi-agent pattern from eino-examples
+// MultiAgentOrchestrator 实现了eino-examples的官方多智能体模式
 type MultiAgentOrchestrator struct {
 	config          *UnifyDialogConfig
 	modelFactory    *ModelFactory
@@ -22,13 +22,13 @@ type MultiAgentOrchestrator struct {
 	stateManager    *StateManager
 }
 
-// AgentInput represents input to the multi-agent system
+// AgentInput 表示多智能体系统的输入
 type AgentInput struct {
 	Query   string                 `json:"query"`
 	Context map[string]interface{} `json:"context"`
 }
 
-// AgentOutput represents output from the multi-agent system
+// AgentOutput 表示多智能体系统的输出
 type AgentOutput struct {
 	Success  bool                   `json:"success"`
 	Response string                 `json:"response"`
@@ -36,7 +36,7 @@ type AgentOutput struct {
 	State    *SystemState           `json:"state"`
 }
 
-// SystemState represents the shared state across agents
+// SystemState 表示智能体之间的共享状态
 type SystemState struct {
 	Plan           *Plan                  `json:"plan"`
 	ExecutionLog   []ExecutionEntry       `json:"execution_log"`
@@ -47,7 +47,7 @@ type SystemState struct {
 	CurrentIteration int                  `json:"current_iteration"`
 }
 
-// Plan represents a structured plan
+// Plan 表示结构化计划
 type Plan struct {
 	Steps []PlanStep `json:"steps"`
 	Goal  string     `json:"goal"`

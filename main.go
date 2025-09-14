@@ -11,7 +11,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// MockChatModel provides a mock implementation of BaseChatModel for demonstration
+// MockChatModel 提供BaseChatModel的模拟实现用于演示
 type MockChatModel struct {
 	name string
 }
@@ -21,7 +21,7 @@ func NewMockChatModel(name string) *MockChatModel {
 }
 
 func (m *MockChatModel) Generate(ctx context.Context, messages []*schema.Message, opts ...model.Option) (*schema.Message, error) {
-	// Extract the latest user message
+	// 提取最新的用户消息
 	var userMessage string
 	for i := len(messages) - 1; i >= 0; i-- {
 		if messages[i].Role == schema.User {
@@ -30,7 +30,7 @@ func (m *MockChatModel) Generate(ctx context.Context, messages []*schema.Message
 		}
 	}
 
-	// Generate response based on model type and user message
+	// 根据模型类型和用户消息生成响应
 	var response string
 	if m.name == "planner" {
 		response = m.generatePlannerResponse(userMessage)
@@ -47,18 +47,18 @@ func (m *MockChatModel) Generate(ctx context.Context, messages []*schema.Message
 }
 
 func (m *MockChatModel) Stream(ctx context.Context, messages []*schema.Message, opts ...model.Option) (*schema.StreamReader[*schema.Message], error) {
-	// For simplicity, we'll just call Generate and wrap it in a stream
+	// 为简化起见，我们只调用Generate并将其包装在流中
 	msg, err := m.Generate(ctx, messages, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create a simple stream reader that returns the message once
+	// 创建一个简单的流读取器，返回消息一次
 	return schema.StreamReaderFromArray([]*schema.Message{msg}), nil
 }
 
 func (m *MockChatModel) generatePlannerResponse(userMessage string) string {
-	// Generate a mock execution plan based on user input
+	// 根据用户输入生成模拟执行计划
 	plan := ExecutionPlan{
 		Goal: fmt.Sprintf("Process user request: %s", userMessage),
 		Steps: []ExecutionStep{
@@ -131,7 +131,7 @@ func (m *MockChatModel) generatePlannerResponse(userMessage string) string {
 }
 
 func (m *MockChatModel) generateSupervisorResponse(userMessage string) string {
-	// Generate a mock supervisor decision
+	// 生成模拟监督者决策
 	response := SupervisorResponse{
 		Action: ActionContinue,
 		Reason: "Analysis complete. Execution can continue as planned.",
@@ -147,7 +147,7 @@ func main() {
 
 	ctx := context.Background()
 
-	// Create agent configuration
+	// 创建智能体配置
 	config := &AgentConfig{
 		MaxIterations: 10,
 		GlobalTimeout: 5 * time.Minute,
@@ -204,17 +204,17 @@ func main() {
 		EnableDebug: true,
 	}
 
-	// Create mock models
+	// 创建模拟模型
 	plannerModel := NewMockChatModel("planner")
 	supervisorModel := NewMockChatModel("supervisor")
 
-	// Create the unified dialog agent
+	// 创建统一对话智能体
 	agent, err := NewUnifiedDialogAgent(ctx, config, plannerModel, supervisorModel)
 	if err != nil {
 		log.Fatalf("Failed to create unified dialog agent: %v", err)
 	}
 
-	// Example user inputs to test the agent
+	// 测试智能体的示例用户输入
 	testCases := []struct {
 		name    string
 		input   string
@@ -223,17 +223,17 @@ func main() {
 		{
 			name:    "Data Analysis Request",
 			input:   "Please analyze our user engagement data from the last month and send me a summary report.",
-			description: "Tests multi-step workflow with database queries, data processing, and notification",
+			description: "测试包含数据库查询、数据处理和通知的多步骤工作流",
 		},
 		{
 			name:    "Customer Support",
 			input:   "A customer complained about their order. Can you look up their order details and send them an update?",
-			description: "Tests customer data lookup and communication workflow",
+			description: "测试客户数据查找和通信工作流",
 		},
 		{
 			name:    "System Health Check",
 			input:   "Check the health of all our services and create a status report.",
-			description: "Tests parallel API calls and report generation",
+			description: "测试并行API调用和报告生成",
 		},
 	}
 
@@ -245,7 +245,7 @@ func main() {
 		fmt.Printf("   Description: %s\n", testCase.description)
 		fmt.Printf("   Input: %s\n", testCase.input)
 
-		// Create user input message
+		// 创建用户输入消息
 		userInput := []*schema.Message{
 			{
 				Role:    schema.User,
@@ -253,7 +253,7 @@ func main() {
 			},
 		}
 
-		// Process the user input
+		// 处理用户输入
 		fmt.Printf("   Processing... ")
 		start := time.Now()
 
@@ -268,16 +268,16 @@ func main() {
 
 		fmt.Printf("✅ SUCCESS (%.2fs)\n", duration.Seconds())
 
-		// Display response
+		// 显示响应
 		if len(response) > 0 {
 			fmt.Printf("   Response: %s\n", response[0].Content)
 		}
 
-		// Add delay between test cases
+		// 在测试用例之间添加延迟
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	// Demonstrate MCP client manager functionality
+	// 演示MCP客户端管理器功能
 	fmt.Println("\n🔧 MCP Client Manager Demo")
 	fmt.Println("--------------------------")
 
@@ -288,7 +288,7 @@ func main() {
 	for name, client := range clients {
 		fmt.Printf("- %s: %s\n", name, client.Name())
 
-		// Test client health
+		// 测试客户端健康状态
 		healthy := client.IsHealthy(ctx)
 		status := "❌ Unhealthy"
 		if healthy {
@@ -296,18 +296,18 @@ func main() {
 		}
 		fmt.Printf("  Status: %s\n", status)
 
-		// Get tool info
+		// 获取工具信息
 		toolInfo, err := client.GetToolInfo(ctx)
 		if err == nil {
 			fmt.Printf("  Description: %s\n", toolInfo.Desc)
 		}
 	}
 
-	// Demonstrate parameter resolution
+	// 演示参数解析
 	fmt.Println("\n🔍 Parameter Resolution Demo")
 	fmt.Println("----------------------------")
 
-	// Create a test execution state
+	// 创建测试执行状态
 	testState := &ExecutionState{
 		DataStore: map[string]interface{}{
 			"step_1": map[string]interface{}{
@@ -325,7 +325,7 @@ func main() {
 
 	resolver := NewParameterResolver(testState)
 
-	// Test parameter resolution
+	// 测试参数解析
 	testStep := &ExecutionStep{
 		ID:   "test_step",
 		Type: StepTypeToolCall,

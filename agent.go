@@ -9,7 +9,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// UnifiedDialogAgent implements the main unified dialog agent using the hybrid architecture
+// UnifiedDialogAgent 使用混合架构实现主要的统一对话智能体
 type UnifiedDialogAgent struct {
 	config      *AgentConfig
 	planner     *PlannerAgent
@@ -18,26 +18,26 @@ type UnifiedDialogAgent struct {
 	mcpManager  *MCPClientManager
 }
 
-// NewUnifiedDialogAgent creates a new unified dialog agent
+// NewUnifiedDialogAgent 创建新的统一对话智能体
 func NewUnifiedDialogAgent(ctx context.Context, config *AgentConfig, plannerModel, supervisorModel model.BaseChatModel) (*UnifiedDialogAgent, error) {
-	// Create MCP client manager
+	// 创建MCP客户端管理器
 	mcpManager := NewMCPClientManager()
 
-	// Register MCP clients based on configuration
+	// 根据配置注册MCP客户端
 	if err := registerMCPClients(mcpManager, config.Tools); err != nil {
 		return nil, fmt.Errorf("failed to register MCP clients: %w", err)
 	}
 
-	// Create planner agent
+	// 创建规划智能体
 	planner, err := NewPlannerAgent(ctx, config.PlannerConfig, plannerModel, mcpManager)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create planner agent: %w", err)
 	}
 
-	// Create executor agent
+	// 创建执行智能体
 	executor := NewExecutorAgent(config.ExecutorConfig, mcpManager)
 
-	// Create supervisor agent
+	// 创建监督智能体
 	supervisor, err := NewSupervisorAgent(ctx, config.SupervisorConfig, supervisorModel)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create supervisor agent: %w", err)
@@ -52,9 +52,9 @@ func NewUnifiedDialogAgent(ctx context.Context, config *AgentConfig, plannerMode
 	}, nil
 }
 
-// ProcessUserInput processes user input and returns a response
+// ProcessUserInput 处理用户输入并返回响应
 func (a *UnifiedDialogAgent) ProcessUserInput(ctx context.Context, userInput []*schema.Message) ([]*schema.Message, error) {
-	// Initialize execution state
+	// 初始化执行状态
 	state := &ExecutionState{
 		UserInput:     userInput,
 		DataStore:     make(map[string]interface{}),
@@ -63,32 +63,32 @@ func (a *UnifiedDialogAgent) ProcessUserInput(ctx context.Context, userInput []*
 		MaxIterations: a.config.MaxIterations,
 	}
 
-	// Apply global timeout if configured
+	// 如果配置了全局超时，应用全局超时
 	if a.config.GlobalTimeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, a.config.GlobalTimeout)
 		defer cancel()
 	}
 
-	// Log the start of processing
+	// 记录处理开始
 	state.AddLogEntry("", "user_input_processing_started", map[string]interface{}{
 		"input_count": len(userInput),
 		"user_query":  a.extractUserQuery(userInput),
 	}, LogLevelInfo)
 
-	// PHASE 1: PLANNING
+	// 阶段1：规划
 	plan, err := a.executePhase1Planning(ctx, userInput, state)
 	if err != nil {
 		return nil, fmt.Errorf("planning phase failed: %w", err)
 	}
 
-	// PHASE 2: EXECUTION WITH SUPERVISION
+	// 阶段2：在监督下执行
 	response, err := a.executePhase2ExecutionWithSupervision(ctx, plan, state)
 	if err != nil {
 		return nil, fmt.Errorf("execution phase failed: %w", err)
 	}
 
-	// Log the completion of processing
+	// 记录处理完成
 	state.AddLogEntry("", "user_input_processing_completed", map[string]interface{}{
 		"total_steps":       len(plan.Steps),
 		"completed_steps":   len(state.GetCompletedSteps()),
@@ -99,7 +99,7 @@ func (a *UnifiedDialogAgent) ProcessUserInput(ctx context.Context, userInput []*
 	return response, nil
 }
 
-// executePhase1Planning executes the planning phase
+// executePhase1Planning 执行规划阶段
 func (a *UnifiedDialogAgent) executePhase1Planning(ctx context.Context, userInput []*schema.Message, state *ExecutionState) (*ExecutionPlan, error) {
 	state.AddLogEntry("", "planning_phase_started", nil, LogLevelInfo)
 
@@ -120,19 +120,19 @@ func (a *UnifiedDialogAgent) executePhase1Planning(ctx context.Context, userInpu
 	return plan, nil
 }
 
-// executePhase2ExecutionWithSupervision executes the execution phase with supervisor oversight
+// executePhase2ExecutionWithSupervision 在监督者监督下执行执行阶段
 func (a *UnifiedDialogAgent) executePhase2ExecutionWithSupervision(ctx context.Context, plan *ExecutionPlan, state *ExecutionState) ([]*schema.Message, error) {
 	state.AddLogEntry("", "execution_phase_started", map[string]interface{}{
 		"plan_id": plan.ID,
 	}, LogLevelInfo)
 
-	// Main execution loop with supervisor intervention
+	// 带有监督者干预的主执行循环
 	for {
-		// Execute the plan
+		// 执行计划
 		err := a.executor.ExecutePlan(ctx, plan, state)
 
 		if err == nil {
-			// Execution completed successfully
+			// 执行成功完成
 			state.AddLogEntry("", "execution_phase_completed", map[string]interface{}{
 				"plan_id": plan.ID,
 				"status":  "success",
@@ -140,10 +140,10 @@ func (a *UnifiedDialogAgent) executePhase2ExecutionWithSupervision(ctx context.C
 			break
 		}
 
-		// Check if supervisor should intervene
+		// 检查监督者是否应该干预
 		shouldIntervene := a.supervisor.ShouldIntervene(ctx, state.CurrentStepID, err, state)
 		if !shouldIntervene {
-			// Execution failed and supervisor won't intervene
+			// 执行失败，监督者不会干预
 			state.AddLogEntry("", "execution_phase_failed", map[string]interface{}{
 				"plan_id": plan.ID,
 				"error":   err.Error(),

@@ -11,19 +11,19 @@ import (
 	"strings"
 )
 
-// ParameterResolver handles dynamic parameter resolution from various sources
+// ParameterResolver 处理来自各种源的动态参数解析
 type ParameterResolver struct {
 	state *ExecutionState
 }
 
-// NewParameterResolver creates a new parameter resolver
+// NewParameterResolver 创建新的参数解析器
 func NewParameterResolver(state *ExecutionState) *ParameterResolver {
 	return &ParameterResolver{
 		state: state,
 	}
 }
 
-// ResolveParameters resolves all parameters in a step, replacing references with actual values
+// ResolveParameters 解析步骤中的所有参数，用实际值替换引用
 func (r *ParameterResolver) ResolveParameters(ctx context.Context, step *ExecutionStep) (map[string]interface{}, error) {
 	resolved := make(map[string]interface{})
 

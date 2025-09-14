@@ -9,25 +9,25 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// ModelFactory creates model instances based on configuration
+// ModelFactory 根据配置创建模型实例
 type ModelFactory struct {
 	config *UnifyDialogConfig
 }
 
-// NewModelFactory creates a new model factory
+// NewModelFactory 创建新的模型工厂
 func NewModelFactory(config *UnifyDialogConfig) *ModelFactory {
 	return &ModelFactory{config: config}
 }
 
-// CreateChatModel creates a chat model based on the configuration
+// CreateChatModel 根据配置创建聊天模型
 func (f *ModelFactory) CreateChatModel(ctx context.Context, role string) (model.ChatModel, error) {
 	switch f.config.ModelProvider {
 	case "mock":
-		log.Printf("Creating mock model for role: %s", role)
+		log.Printf("为角色 %s 创建模拟模型", role)
 		return &MockChatModel{role: role}, nil
 
-	// For now, we'll use mock models until we add the eino-ext dependencies
-	// The real implementation would look like:
+	// 目前使用模拟模型，直到添加eino-ext依赖
+	// 真实实现如下：
 	/*
 	case "openai":
 		return f.createOpenAIModel(ctx, role)
@@ -38,14 +38,14 @@ func (f *ModelFactory) CreateChatModel(ctx context.Context, role string) (model.
 	*/
 
 	default:
-		// Fallback to mock for unsupported providers
-		log.Printf("Provider %s not yet implemented, using mock model for role: %s", f.config.ModelProvider, role)
+		// 对于不支持的提供商回退到模拟模型
+		log.Printf("提供商 %s 尚未实现，为角色 %s 使用模拟模型", f.config.ModelProvider, role)
 		return &MockChatModel{role: role}, nil
 	}
 }
 
-// createOpenAIModel creates an OpenAI model
-// This would be uncommented when eino-ext/components/model/openai is available
+// createOpenAIModel 创建OpenAI模型
+// 当eino-ext/components/model/openai可用时将取消注释
 /*
 func (f *ModelFactory) createOpenAIModel(ctx context.Context, role string) (model.ChatModel, error) {
 	import "github.com/cloudwego/eino-ext/components/model/openai"
@@ -67,8 +67,8 @@ func (f *ModelFactory) createOpenAIModel(ctx context.Context, role string) (mode
 }
 */
 
-// createDeepSeekModel creates a DeepSeek model
-// This would be uncommented when eino-ext/components/model/deepseek is available
+// createDeepSeekModel 创建DeepSeek模型
+// 当eino-ext/components/model/deepseek可用时将取消注释
 /*
 func (f *ModelFactory) createDeepSeekModel(ctx context.Context, role string) (model.ChatModel, error) {
 	import "github.com/cloudwego/eino-ext/components/model/deepseek"
@@ -90,8 +90,8 @@ func (f *ModelFactory) createDeepSeekModel(ctx context.Context, role string) (mo
 }
 */
 
-// createClaudeModel creates a Claude model
-// This would be uncommented when eino-ext/components/model/claude is available
+// createClaudeModel 创建Claude模型
+// 当eino-ext/components/model/claude可用时将取消注释
 /*
 func (f *ModelFactory) createClaudeModel(ctx context.Context, role string) (model.ChatModel, error) {
 	import "github.com/cloudwego/eino-ext/components/model/claude"
@@ -113,22 +113,22 @@ func (f *ModelFactory) createClaudeModel(ctx context.Context, role string) (mode
 }
 */
 
-// CreatePlannerModel creates a model specifically for the planner agent
+// CreatePlannerModel 专门为规划智能体创建模型
 func (f *ModelFactory) CreatePlannerModel(ctx context.Context) (model.ChatModel, error) {
 	return f.CreateChatModel(ctx, "planner")
 }
 
-// CreateExecutorModel creates a model specifically for the executor agent
+// CreateExecutorModel 专门为执行智能体创建模型
 func (f *ModelFactory) CreateExecutorModel(ctx context.Context) (model.ChatModel, error) {
 	return f.CreateChatModel(ctx, "executor")
 }
 
-// CreateSupervisorModel creates a model specifically for the supervisor agent
+// CreateSupervisorModel 专门为监督智能体创建模型
 func (f *ModelFactory) CreateSupervisorModel(ctx context.Context) (model.ChatModel, error) {
 	return f.CreateChatModel(ctx, "supervisor")
 }
 
-// Enhanced MockChatModel with role awareness
+// 具有角色感知能力的增强MockChatModel
 type MockChatModel struct {
 	role string
 }
@@ -147,7 +147,7 @@ func (m *MockChatModel) Generate(ctx context.Context, messages []*schema.Message
 }
 
 func (m *MockChatModel) generatePlannerResponse(messages []*schema.Message) (*schema.Message, error) {
-	// Simulate planner logic
+	// 模拟规划器逻辑
 	return schema.AssistantMessage(`{
 		"steps": [
 			{
@@ -167,7 +167,7 @@ func (m *MockChatModel) generatePlannerResponse(messages []*schema.Message) (*sc
 }
 
 func (m *MockChatModel) generateExecutorResponse(messages []*schema.Message) (*schema.Message, error) {
-	// Simulate executor logic
+	// 模拟执行器逻辑
 	return schema.AssistantMessage(`{
 		"status": "success",
 		"result": "Task executed successfully",
@@ -176,7 +176,7 @@ func (m *MockChatModel) generateExecutorResponse(messages []*schema.Message) (*s
 }
 
 func (m *MockChatModel) generateSupervisorResponse(messages []*schema.Message) (*schema.Message, error) {
-	// Simulate supervisor logic
+	// 模拟监督器逻辑
 	return schema.AssistantMessage(`{
 		"evaluation": "satisfactory",
 		"feedback": "The task was completed successfully",
@@ -189,7 +189,7 @@ func (m *MockChatModel) Stream(ctx context.Context, messages []*schema.Message, 
 }
 
 func (m *MockChatModel) BindTools(tools []schema.BaseTool) error {
-	// Mock implementation
+	// 模拟实现
 	return nil
 }
 

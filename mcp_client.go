@@ -12,21 +12,21 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// MCPClientManager manages multiple MCP clients
+// MCPClientManager 管理多个MCP客户端
 type MCPClientManager struct {
 	clients map[string]MCPClient
 	mu      sync.RWMutex
 }
 
-// MCPClient interface for MCP tool interactions
+// MCPClient MCP工具交互的接口
 type MCPClient interface {
-	// Name returns the client name
+	// Name 返回客户端名称
 	Name() string
-	// Call executes a tool operation
+	// Call 执行工具操作
 	Call(ctx context.Context, operation string, parameters map[string]interface{}) (interface{}, error)
-	// GetToolInfo returns tool information for this client
+	// GetToolInfo 返回此客户端的工具信息
 	GetToolInfo(ctx context.Context) (*schema.ToolInfo, error)
-	// IsHealthy checks if the client is healthy
+	// IsHealthy 检查客户端是否健康
 	IsHealthy(ctx context.Context) bool
 }
 

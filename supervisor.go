@@ -12,17 +12,17 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// SupervisorAgent implements the supervisor component of the unified dialog agent
+// SupervisorAgent 实现统一对话智能体的监督组件
 type SupervisorAgent struct {
 	config         *SupervisorConfig
 	chatModel      model.BaseChatModel
 	promptTemplate prompt.ChatTemplate
-	failureCount   map[string]int // Track failures per step for threshold-based triggering
+	failureCount   map[string]int // 跟踪每个步骤的失败次数以进行基于阈值的触发
 }
 
-// NewSupervisorAgent creates a new supervisor agent
+// NewSupervisorAgent 创建新的监督智能体
 func NewSupervisorAgent(ctx context.Context, config *SupervisorConfig, chatModel model.BaseChatModel) (*SupervisorAgent, error) {
-	// Create the supervisor prompt template
+	// 创建监督者提示模板
 	promptTemplate := createSupervisorPrompt(config)
 
 	return &SupervisorAgent{

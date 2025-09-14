@@ -8,17 +8,17 @@ import (
 
 )
 
-// ExecutorAgent implements the executor component of the unified dialog agent
+// ExecutorAgent 实现统一对话智能体的执行器组件
 type ExecutorAgent struct {
 	config         *ExecutorConfig
 	mcpManager     *MCPClientManager
 	resolver       *ParameterResolver
-	parallelLimiter chan struct{} // Semaphore for controlling parallel execution
+	parallelLimiter chan struct{} // 用于控制并行执行的信号量
 }
 
-// NewExecutorAgent creates a new executor agent
+// NewExecutorAgent 创建新的执行器智能体
 func NewExecutorAgent(config *ExecutorConfig, mcpManager *MCPClientManager) *ExecutorAgent {
-	// Create a semaphore to limit parallel execution
+	// 创建信号量来限制并行执行
 	parallelLimiter := make(chan struct{}, config.MaxParallelSteps)
 
 	return &ExecutorAgent{

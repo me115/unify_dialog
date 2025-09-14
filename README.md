@@ -74,26 +74,160 @@
 
 ```
 unify_dialog/
-├── main.go              # 主程序和演示代码
-├── types.go             # 核心数据类型定义
-├── agent.go             # 统一对话智能体实现
-├── planner.go           # 规划师组件
-├── executor.go          # 执行器组件
-├── supervisor.go        # 监督者组件
-├── parameter_resolver.go # 参数解析器
-├── mcp_client.go        # MCP 客户端管理
-├── go.mod              # Go 模块定义
-└── README.md           # 项目说明文档
+├── 主程序文件
+│   ├── main.go                    # 原始主程序和演示代码
+│   ├── improved_main.go           # 改进的统一对话系统主程序
+│   ├── simple_main.go            # 简化版主程序
+│   └── fixed_main.go             # 修复版主程序
+├── 核心架构文件
+│   ├── agent.go                   # 统一对话智能体核心实现
+│   ├── planner.go                # 规划师组件（任务分解和计划生成）
+│   ├── executor.go               # 执行器组件（步骤执行和并行控制）
+│   └── supervisor.go             # 监督者组件（错误监督和决策干预）
+├── 配置和工厂模式
+│   ├── config.go                 # 配置管理系统（YAML配置，环境变量）
+│   ├── model_factory.go          # 模型工厂（多提供商模型创建）
+│   ├── callbacks.go              # 回调管理系统（日志、性能、调试）
+│   └── mcp_tools.go              # MCP工具管理（官方组件集成准备）
+├── 多智能体系统
+│   ├── multiagent_system.go      # 多智能体编排系统实现
+│   └── demo_improved.go          # 改进系统演示和测试
+├── 工具和辅助系统
+│   ├── parameter_resolver.go     # 动态参数解析器
+│   ├── mcp_client.go             # MCP 客户端管理器
+│   └── types.go                  # 核心数据类型和结构定义
+├── 测试文件
+│   ├── agent_test.go             # 智能体单元测试
+│   ├── unified_agent_test.go     # 统一智能体测试
+│   ├── simple_test.go            # 简单功能测试
+│   └── comprehensive_test.go     # 综合集成测试
+├── 演示和示例
+│   └── demo.go                   # 基础演示程序
+├── 设计文档
+│   ├── DESIGN_DOCUMENT_PART1.md  # 项目概述和架构设计
+│   ├── DESIGN_DOCUMENT_PART2.md  # 核心类设计和关系组织
+│   ├── DESIGN_DOCUMENT_PART3.md  # 状态管理和多智能体系统
+│   ├── DESIGN_DOCUMENT_PART4.md  # 数据流和系统交互
+│   └── DESIGN_DOCUMENT_PART5.md  # 设计模式和可扩展性
+├── 配置示例
+│   ├── config.example.yaml       # 配置文件示例
+│   └── config.dev.yaml          # 开发环境配置示例
+├── 项目管理
+│   ├── go.mod                    # Go 模块定义和依赖
+│   ├── go.sum                    # 依赖版本锁定
+│   ├── CLAUDE.md                 # Claude Code 使用指南
+│   └── README.md                 # 项目说明文档（本文件）
 ```
+
+### 文件功能详细说明
+
+#### 🚀 主程序文件
+- **main.go**: 原始实现，展示基础的 Planner-Supervisor-Executor 架构
+- **improved_main.go**: 改进版本，集成了配置管理、模型工厂、回调系统
+- **simple_main.go**: 简化版本，适合快速理解核心概念
+- **fixed_main.go**: 修复和优化版本
+
+#### 🏗️ 核心架构文件
+- **agent.go**: 统一对话智能体的主要实现，协调三个核心组件
+- **planner.go**: 规划师智能体，负责将用户请求分解为结构化执行计划
+- **executor.go**: 执行器智能体，按依赖关系执行计划步骤，支持并行处理
+- **supervisor.go**: 监督者智能体，监控执行过程并在需要时进行智能干预
+
+#### ⚙️ 配置和工厂模式
+- **config.go**: 统一配置管理，支持 YAML 文件和环境变量
+- **model_factory.go**: 模型工厂模式，支持 OpenAI、DeepSeek、Claude 等多个提供商
+- **callbacks.go**: 回调管理系统，提供调试、日志、性能监控等功能
+- **mcp_tools.go**: MCP 工具管理，为官方 MCP 组件集成做准备
+
+#### 🤖 多智能体系统
+- **multiagent_system.go**: 实现官方多智能体编排模式和状态管理
+- **demo_improved.go**: 改进系统的演示程序，展示各项功能集成
+
+#### 🔧 工具和辅助系统
+- **parameter_resolver.go**: 动态参数解析，支持复杂的引用和模板语法
+- **mcp_client.go**: MCP 客户端管理器，统一管理多个工具客户端
+- **types.go**: 核心数据结构定义，包括执行计划、步骤、状态等
+
+#### 🧪 测试文件
+- **agent_test.go**: 智能体核心功能的单元测试
+- **unified_agent_test.go**: 统一智能体的集成测试
+- **simple_test.go**: 基础功能验证测试
+- **comprehensive_test.go**: 全面的系统集成测试
+
+#### 📚 设计文档
+完整的设计文档系列，详细说明：
+- **PART1**: 项目概述、架构设计和技术选择
+- **PART2**: 核心类设计和组件关系
+- **PART3**: 状态管理和多智能体系统实现
+- **PART4**: 数据流设计和系统交互模式
+- **PART5**: 设计模式应用和扩展性考虑
 
 ## 运行示例
 
-### 1. 编译和运行
+### 1. 基础运行方式
 
+#### 运行原始版本（main.go）
 ```bash
 cd examples/unify_dialog
 go mod tidy
-go run .
+go run main.go
+```
+
+#### 运行改进版本（improved_main.go）
+```bash
+# 使用默认配置运行
+go run improved_main.go
+
+# 使用配置文件运行
+go run improved_main.go -config config.example.yaml
+
+# 创建示例配置文件
+go run improved_main.go -create-config
+
+# 直接处理查询
+go run improved_main.go -query "请分析我们的用户数据并生成报告"
+```
+
+#### 运行简化版本（simple_main.go）
+```bash
+go run simple_main.go
+```
+
+### 2. 配置文件使用
+
+#### 创建配置文件
+```bash
+go run improved_main.go -create-config
+```
+
+这将创建 `config.example.yaml` 文件，包含所有配置选项的示例。
+
+#### 自定义配置
+```yaml
+# 复制并编辑配置文件
+cp config.example.yaml config.yaml
+# 编辑 config.yaml 设置你的 API 密钥和其他选项
+go run improved_main.go -config config.yaml
+```
+
+### 3. 环境变量配置
+```bash
+# 设置模型提供商
+export MODEL_PROVIDER=openai
+export OPENAI_API_KEY=your_api_key_here
+export OPENAI_MODEL=gpt-4o-mini
+
+# 运行系统
+go run improved_main.go
+```
+
+### 4. 演示模式
+```bash
+# 运行改进系统演示
+go run demo_improved.go
+
+# 运行基础演示
+go run demo.go
 ```
 
 ### 2. 示例输出
@@ -395,6 +529,81 @@ SupervisorConfig: &SupervisorConfig{
 - **可观测性**: 完整的回调机制和执行日志
 - **错误恢复**: 智能的错误处理和恢复机制
 
+## 系统架构演进
+
+### 版本演进历程
+
+#### V1.0 - 基础架构（main.go）
+- ✅ 实现基础的 Planner-Supervisor-Executor 架构
+- ✅ 支持简单的任务规划和执行
+- ✅ 基本的 MCP 工具集成
+- ✅ 动态参数解析功能
+
+#### V2.0 - 配置管理（improved_main.go）
+- ✅ 统一配置管理系统
+- ✅ 多模型提供商支持
+- ✅ 完整的回调和监控系统
+- ✅ 流式处理支持
+
+#### V3.0 - 多智能体系统（multiagent_system.go）
+- ✅ 官方多智能体编排模式
+- ✅ 状态管理和持久化
+- ✅ 复杂工作流支持
+- ✅ 全面的错误处理和恢复
+
+### 未来路线图
+
+#### V4.0 - 官方组件集成（计划中）
+- 🔄 集成 eino-ext/components/tool/mcp 官方组件
+- 🔄 使用 eino-ext/components/model/* 真实模型提供商
+- 🔄 集成 eino-ext/callbacks/* 官方回调组件
+- 🔄 使用官方多智能体架构模式
+
+#### V5.0 - 增强功能（规划中）
+- 📋 支持更多 MCP 工具类型
+- 📋 实现工作流可视化
+- 📋 添加批处理模式
+- 📋 支持分布式执行
+
+#### V6.0 - 生产就绪（未来）
+- 📋 性能优化和缓存策略
+- 📋 完整的监控和告警
+- 📋 安全加固和权限控制
+- 📋 Docker 容器化部署
+
+## 开发指南
+
+### 贡献代码
+
+1. **Fork 项目**并创建功能分支
+2. **遵循现有代码风格**和注释规范
+3. **添加必要的测试**覆盖新功能
+4. **更新文档**说明新增功能
+5. **提交 PR**并描述改动详情
+
+### 代码规范
+
+- 所有公开函数都需要中文注释
+- 保持类名、变量名等程序术语为英文
+- 遵循 Go 语言标准代码格式
+- 使用有意义的变量和函数命名
+
+### 测试规范
+
+```bash
+# 运行所有测试
+go test ./...
+
+# 运行特定测试
+go test -run TestUnifiedDialogAgent
+
+# 测试覆盖率
+go test -cover ./...
+
+# 性能基准测试
+go test -bench=.
+```
+
 ## 总结
 
 本统一对话智能体展示了如何基于 EINO 框架构建复杂的 AI 应用系统。通过 Planner-Supervisor-Executor 混合架构，系统能够：
@@ -403,5 +612,18 @@ SupervisorConfig: &SupervisorConfig{
 2. **高效执行**: 支持并行执行和动态参数解析
 3. **智能监督**: 在关键节点进行干预和决策
 4. **灵活扩展**: 支持多种工具集成和自定义扩展
+5. **配置驱动**: 通过配置文件和环境变量灵活配置
+6. **生产就绪**: 完整的回调、监控和错误处理机制
 
 这种架构平衡了效率和灵活性，既能处理确定性强的任务（通过详细规划），也能应对不确定性高的场景（通过监督者干预），是构建强大智能体系统的理想选择。
+
+### 核心优势
+
+- 🏗️ **模块化设计**: 清晰的组件分离和职责划分
+- 🔄 **智能协调**: 三个智能体协同工作，互相补充
+- ⚡ **高效执行**: 并行处理和智能调度优化性能
+- 🛡️ **容错能力**: 完善的错误处理和自动恢复机制
+- 🔧 **易于扩展**: 插件化的工具系统和清晰的接口设计
+- 📊 **可观测性**: 全面的日志、监控和调试支持
+
+该项目不仅是一个完整的智能体实现，更是学习和研究多智能体系统设计的宝贵参考资源。

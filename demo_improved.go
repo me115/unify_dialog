@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// DemoImprovedSystem demonstrates the improved unified dialog system
+// DemoImprovedSystem 演示改进的统一对话系统
 func DemoImprovedSystem() {
 	fmt.Println("=== Improved UnifyDialog System Demo ===")
 

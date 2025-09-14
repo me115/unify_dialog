@@ -14,7 +14,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// ImprovedUnifyDialogSystem represents the improved unified dialog system
+// ImprovedUnifyDialogSystem 表示改进的统一对话系统
 type ImprovedUnifyDialogSystem struct {
 	config           *UnifyDialogConfig
 	modelFactory     *ModelFactory
@@ -24,7 +24,7 @@ type ImprovedUnifyDialogSystem struct {
 	compiledGraph    compose.Runnable[string, *FinalOutput]
 }
 
-// NewImprovedUnifyDialogSystem creates a new improved unified dialog system
+// NewImprovedUnifyDialogSystem 创建新的改进统一对话系统
 func NewImprovedUnifyDialogSystem(config *UnifyDialogConfig) (*ImprovedUnifyDialogSystem, error) {
 	if err := config.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid configuration: %w", err)
@@ -38,22 +38,22 @@ func NewImprovedUnifyDialogSystem(config *UnifyDialogConfig) (*ImprovedUnifyDial
 	}, nil
 }
 
-// Initialize sets up the system components
+// Initialize 设置系统组件
 func (s *ImprovedUnifyDialogSystem) Initialize(ctx context.Context) error {
-	// Initialize MCP tools
+	// 初始化MCP工具
 	if err := s.mcpToolManager.Initialize(ctx); err != nil {
 		return fmt.Errorf("failed to initialize MCP tools: %w", err)
 	}
 
-	// Set up tool registry
+	// 设置工具注册表
 	s.toolRegistry = NewToolRegistry(s.mcpToolManager)
 
-	// Initialize callbacks
+	// 初始化回调
 	if err := s.callbackManager.Initialize(ctx); err != nil {
 		return fmt.Errorf("failed to initialize callbacks: %w", err)
 	}
 
-	// Build the multi-agent graph
+	// 构建多智能体图
 	if err := s.buildGraph(ctx); err != nil {
 		return fmt.Errorf("failed to build graph: %w", err)
 	}
@@ -62,12 +62,12 @@ func (s *ImprovedUnifyDialogSystem) Initialize(ctx context.Context) error {
 	return nil
 }
 
-// buildGraph constructs the multi-agent orchestration graph
+// buildGraph 构建多智能体编排图
 func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
-	// Create the graph with proper type parameters
+	// 使用适当的类型参数创建图
 	g := compose.NewGraph[string, *FinalOutput]()
 
-	// Create agents with real models
+	// 使用真实模型创建智能体
 	plannerModel, err := s.modelFactory.CreatePlannerModel(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to create planner model: %w", err)
@@ -83,7 +83,7 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 		return fmt.Errorf("failed to create supervisor model: %w", err)
 	}
 
-	// Create prompt templates
+	// 创建提示模板
 	plannerPrompt := prompt.FromMessages(
 		schema.SystemMessage("You are a planning agent. Create a detailed plan to address the user's query."),
 		schema.UserMessage("Query: {{.query}}"),
@@ -99,7 +99,7 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 		schema.UserMessage("Results: {{.results}}"),
 	)
 
-	// Add nodes to the graph
+	// 向图中添加节点
 	if err := g.AddChatTemplateNode("planner_prompt", plannerPrompt); err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 		return err
 	}
 
-	// Add tools node if tools are available
+	// 如果工具可用，添加工具节点
 	if tools := s.toolRegistry.GetAllTools(); len(tools) > 0 {
 		toolsNode := compose.NewToolNode("tools", tools...)
 		if err := g.AddToolsNode("tools", toolsNode); err != nil {
@@ -137,14 +137,14 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 		return err
 	}
 
-	// Connect nodes with edges
+	// 用边连接节点
 	g.AddEdge(compose.START, "planner_prompt")
 	g.AddEdge("planner_prompt", "planner")
 	g.AddEdge("planner", "plan_parser")
 	g.AddEdge("plan_parser", "executor_prompt")
 	g.AddEdge("executor_prompt", "executor")
 
-	// Add conditional edge for tool execution
+	// 为工具执行添加条件边
 	g.AddBranch("executor", s.checkToolExecution)
 
 	if len(s.toolRegistry.GetAllTools()) > 0 {
@@ -155,7 +155,7 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 	g.AddEdge("supervisor", "final_output")
 	g.AddEdge("final_output", compose.END)
 
-	// Compile the graph with callbacks
+	// 使用回调编译图
 	options := []compose.GraphCompileOption{}
 	if handlers := s.callbackManager.GetHandlers(); len(handlers) > 0 {
 		for _, handler := range handlers {
@@ -172,11 +172,11 @@ func (s *ImprovedUnifyDialogSystem) buildGraph(ctx context.Context) error {
 	return nil
 }
 
-// Process handles a user query through the multi-agent system
+// Process 通过多智能体系统处理用户查询
 func (s *ImprovedUnifyDialogSystem) Process(ctx context.Context, query string) (*FinalOutput, error) {
 	log.Printf("Processing query: %s", query)
 
-	// Run the graph with callbacks
+	// 使用回调运行图
 	options := []compose.GraphRunOption{}
 	if handlers := s.callbackManager.GetHandlers(); len(handlers) > 0 {
 		for _, handler := range handlers {
@@ -192,13 +192,13 @@ func (s *ImprovedUnifyDialogSystem) Process(ctx context.Context, query string) (
 	return output, nil
 }
 
-// Helper methods for graph nodes
+// 图节点的辅助方法
 
 func (s *ImprovedUnifyDialogSystem) parsePlan(ctx context.Context, input *schema.Message) (map[string]interface{}, error) {
-	// Parse the planner's output into a structured plan
+	// 将规划器的输出解析为结构化计划
 	var plan map[string]interface{}
 	if err := json.Unmarshal([]byte(input.Content), &plan); err != nil {
-		// If JSON parsing fails, use the raw content
+		// 如果JSON解析失败，使用原始内容
 		plan = map[string]interface{}{
 			"raw_plan": input.Content,
 		}
@@ -207,7 +207,7 @@ func (s *ImprovedUnifyDialogSystem) parsePlan(ctx context.Context, input *schema
 }
 
 func (s *ImprovedUnifyDialogSystem) checkToolExecution(ctx context.Context, input *schema.Message) (string, error) {
-	// Check if the executor's output contains tool calls
+	// 检查执行器的输出是否包含工具调用
 	if input.ToolCalls != nil && len(input.ToolCalls) > 0 {
 		return "tools", nil
 	}
@@ -215,7 +215,7 @@ func (s *ImprovedUnifyDialogSystem) checkToolExecution(ctx context.Context, inpu
 }
 
 func (s *ImprovedUnifyDialogSystem) prepareFinalOutput(ctx context.Context, input *schema.Message) (*FinalOutput, error) {
-	// Prepare the final output structure
+	// 准备最终输出结构
 	return &FinalOutput{
 		Success: true,
 		Result:  input.Content,
@@ -226,11 +226,11 @@ func (s *ImprovedUnifyDialogSystem) prepareFinalOutput(ctx context.Context, inpu
 	}, nil
 }
 
-// ProcessWithStream handles a query with streaming support
+// ProcessWithStream 处理具有流式支持的查询
 func (s *ImprovedUnifyDialogSystem) ProcessWithStream(ctx context.Context, query string) (*schema.StreamReader[*FinalOutput], error) {
 	log.Printf("Processing query with streaming: %s", query)
 
-	// Run the graph with streaming
+	// 使用流式运行图
 	options := []compose.GraphRunOption{}
 	if handlers := s.callbackManager.GetHandlers(); len(handlers) > 0 {
 		for _, handler := range handlers {
@@ -246,7 +246,7 @@ func (s *ImprovedUnifyDialogSystem) ProcessWithStream(ctx context.Context, query
 	return stream, nil
 }
 
-// Config file example creation
+// 配置文件示例创建
 func createExampleConfigFile() {
 	config := `# UnifyDialog Configuration File
 # This file configures the improved unified dialog system
@@ -318,7 +318,7 @@ callbacks:
 	}
 }
 
-// Main function for the improved system
+// 改进系统的主函数
 func runImprovedSystem() {
 	var (
 		configFile = flag.String("config", "", "Path to configuration file")
@@ -332,13 +332,13 @@ func runImprovedSystem() {
 		return
 	}
 
-	// Load configuration
+	// 加载配置
 	config, err := LoadConfig(*configFile)
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Create and initialize the system
+	// 创建并初始化系统
 	ctx := context.Background()
 	system, err := NewImprovedUnifyDialogSystem(config)
 	if err != nil {
@@ -349,18 +349,18 @@ func runImprovedSystem() {
 		log.Fatalf("Failed to initialize system: %v", err)
 	}
 
-	// Process query if provided
+	// 如果提供了查询则处理查询
 	if *query != "" {
 		output, err := system.Process(ctx, *query)
 		if err != nil {
 			log.Fatalf("Failed to process query: %v", err)
 		}
 
-		// Print output
+		// 打印输出
 		outputJSON, _ := json.MarshalIndent(output, "", "  ")
 		fmt.Println(string(outputJSON))
 	} else {
-		// Interactive mode
+		// 交互模式
 		fmt.Println("Improved UnifyDialog System - Interactive Mode")
 		fmt.Println("Type 'exit' to quit")
 		fmt.Println("----------------------------------------")
@@ -385,7 +385,7 @@ func runImprovedSystem() {
 	}
 }
 
-// Helper function to demonstrate streaming
+// 演示流式处理的辅助函数
 func demonstrateStreaming(system *ImprovedUnifyDialogSystem, ctx context.Context, query string) {
 	stream, err := system.ProcessWithStream(ctx, query)
 	if err != nil {

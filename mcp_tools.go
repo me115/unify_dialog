@@ -10,13 +10,13 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// MCPToolManager manages MCP tools with official component support
+// MCPToolManager 管理具有官方组件支持的MCP工具
 type MCPToolManager struct {
 	config *UnifyDialogConfig
 	tools  map[string]tool.BaseTool
 }
 
-// NewMCPToolManager creates a new MCP tool manager
+// NewMCPToolManager 创建新的MCP工具管理器
 func NewMCPToolManager(config *UnifyDialogConfig) *MCPToolManager {
 	return &MCPToolManager{
 		config: config,
@@ -24,15 +24,15 @@ func NewMCPToolManager(config *UnifyDialogConfig) *MCPToolManager {
 	}
 }
 
-// Initialize sets up MCP tools
+// Initialize 设置MCP工具
 func (m *MCPToolManager) Initialize(ctx context.Context) error {
 	if !m.config.MCP.Enabled {
-		log.Println("MCP is disabled, using mock tools")
+		log.Println("MCP已禁用，使用模拟工具")
 		return m.initializeMockTools()
 	}
 
-	// Future: Use official MCP component
-	// This would be the real implementation with eino-ext/components/tool/mcp
+	// 未来：使用官方MCP组件
+	// 这是使用eino-ext/components/tool/mcp的真实实现
 	/*
 	import "github.com/cloudwego/eino-ext/components/tool/mcp"
 	import "github.com/mark3labs/mcp-go/client"
@@ -69,14 +69,14 @@ func (m *MCPToolManager) Initialize(ctx context.Context) error {
 	}
 	*/
 
-	// For now, fall back to mock tools
-	log.Println("Official MCP support not yet integrated, using mock tools")
+	// 现在回退到模拟工具
+	log.Println("官方MCP支持尚未集成，使用模拟工具")
 	return m.initializeMockTools()
 }
 
-// initializeMockTools creates mock tools for testing
+// initializeMockTools 为测试创建模拟工具
 func (m *MCPToolManager) initializeMockTools() error {
-	// Create mock tools that simulate MCP tools
+	// 创建模拟MCP工具的模拟工具
 	m.tools["database_query"] = &MCPMockTool{
 		name:        "database_query",
 		description: "Query a database",
@@ -101,11 +101,11 @@ func (m *MCPToolManager) initializeMockTools() error {
 		handler:     m.handleWebSearch,
 	}
 
-	log.Printf("Initialized %d mock MCP tools", len(m.tools))
+	log.Printf("初始化了 %d 个模拟MCP工具", len(m.tools))
 	return nil
 }
 
-// GetTools returns all available tools
+// GetTools 返回所有可用工具
 func (m *MCPToolManager) GetTools() []tool.BaseTool {
 	tools := make([]tool.BaseTool, 0, len(m.tools))
 	for _, t := range m.tools {
@@ -114,20 +114,20 @@ func (m *MCPToolManager) GetTools() []tool.BaseTool {
 	return tools
 }
 
-// GetTool returns a specific tool by name
+// GetTool 根据名称返回特定工具
 func (m *MCPToolManager) GetTool(name string) (tool.BaseTool, bool) {
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-// Mock tool handlers
+// 模拟工具处理器
 func (m *MCPToolManager) handleDatabaseQuery(ctx context.Context, params map[string]interface{}) (interface{}, error) {
 	query, ok := params["query"].(string)
 	if !ok {
 		return nil, fmt.Errorf("query parameter is required")
 	}
 
-	// Simulate database query
+	// 模拟数据库查询
 	result := map[string]interface{}{
 		"query":   query,
 		"results": []map[string]interface{}{
@@ -150,7 +150,7 @@ func (m *MCPToolManager) handleFileRead(ctx context.Context, params map[string]i
 		return nil, fmt.Errorf("path parameter is required")
 	}
 
-	// Simulate file read
+	// 模拟文件读取
 	content := fmt.Sprintf("Mock content of file: %s", path)
 
 	if m.config.System.Debug {
@@ -175,7 +175,7 @@ func (m *MCPToolManager) handleAPIRequest(ctx context.Context, params map[string
 		method = "GET"
 	}
 
-	// Simulate API request
+	// 模拟API请求
 	response := map[string]interface{}{
 		"status": 200,
 		"body": map[string]interface{}{
@@ -200,7 +200,7 @@ func (m *MCPToolManager) handleWebSearch(ctx context.Context, params map[string]
 		return nil, fmt.Errorf("query parameter is required")
 	}
 
-	// Simulate web search
+	// 模拟网络搜索
 	results := []map[string]interface{}{
 		{
 			"title":   "Result 1",
@@ -225,7 +225,7 @@ func (m *MCPToolManager) handleWebSearch(ctx context.Context, params map[string]
 	}, nil
 }
 
-// MCPMockTool implements a mock MCP tool
+// MCPMockTool 实现模拟MCP工具
 type MCPMockTool struct {
 	name        string
 	description string
@@ -265,13 +265,13 @@ func (t *MCPMockTool) Run(ctx context.Context, params string, options ...tool.Op
 	return string(resultJSON), nil
 }
 
-// ToolRegistry provides a registry of all available tools
+// ToolRegistry 提供所有可用工具的注册表
 type ToolRegistry struct {
 	mcpManager *MCPToolManager
 	customTools map[string]tool.BaseTool
 }
 
-// NewToolRegistry creates a new tool registry
+// NewToolRegistry 创建新的工具注册表
 func NewToolRegistry(mcpManager *MCPToolManager) *ToolRegistry {
 	return &ToolRegistry{
 		mcpManager: mcpManager,
@@ -279,12 +279,12 @@ func NewToolRegistry(mcpManager *MCPToolManager) *ToolRegistry {
 	}
 }
 
-// RegisterCustomTool registers a custom tool
+// RegisterCustomTool 注册自定义工具
 func (r *ToolRegistry) RegisterCustomTool(name string, tool tool.BaseTool) {
 	r.customTools[name] = tool
 }
 
-// GetAllTools returns all available tools (MCP + custom)
+// GetAllTools 返回所有可用工具（MCP + 自定义）
 func (r *ToolRegistry) GetAllTools() []tool.BaseTool {
 	tools := r.mcpManager.GetTools()
 	for _, t := range r.customTools {
@@ -293,14 +293,14 @@ func (r *ToolRegistry) GetAllTools() []tool.BaseTool {
 	return tools
 }
 
-// GetToolByName returns a tool by name
+// GetToolByName 根据名称返回工具
 func (r *ToolRegistry) GetToolByName(name string) (tool.BaseTool, bool) {
-	// Check MCP tools first
+	// 首先检查MCP工具
 	if t, ok := r.mcpManager.GetTool(name); ok {
 		return t, true
 	}
 
-	// Check custom tools
+	// 检查自定义工具
 	if t, ok := r.customTools[name]; ok {
 		return t, true
 	}

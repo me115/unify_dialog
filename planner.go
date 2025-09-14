@@ -12,7 +12,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// PlannerAgent implements the planner component of the unified dialog agent
+// PlannerAgent 实现统一对话智能体的规划组件
 type PlannerAgent struct {
 	config      *PlannerConfig
 	chatModel   model.BaseChatModel
@@ -21,9 +21,9 @@ type PlannerAgent struct {
 	promptTemplate prompt.ChatTemplate
 }
 
-// NewPlannerAgent creates a new planner agent
+// NewPlannerAgent 创建新的规划智能体
 func NewPlannerAgent(ctx context.Context, config *PlannerConfig, chatModel model.BaseChatModel, mcpManager *MCPClientManager) (*PlannerAgent, error) {
-	// Create the planner prompt template
+	// 创建规划器提示模板
 	promptTemplate := createPlannerPrompt(config, mcpManager)
 
 	planner := &PlannerAgent{

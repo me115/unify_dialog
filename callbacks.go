@@ -9,13 +9,13 @@ import (
 	"github.com/cloudwego/eino/callbacks"
 )
 
-// CallbackManager manages all callback handlers for the system
+// CallbackManager 管理系统的所有回调处理器
 type CallbackManager struct {
 	config   *UnifyDialogConfig
 	handlers []callbacks.Handler
 }
 
-// NewCallbackManager creates a new callback manager
+// NewCallbackManager 创建新的回调管理器
 func NewCallbackManager(config *UnifyDialogConfig) *CallbackManager {
 	return &CallbackManager{
 		config:   config,
@@ -23,25 +23,25 @@ func NewCallbackManager(config *UnifyDialogConfig) *CallbackManager {
 	}
 }
 
-// Initialize sets up all configured callback handlers
+// Initialize 设置所有已配置的回调处理器
 func (cm *CallbackManager) Initialize(ctx context.Context) error {
 	if !cm.config.System.EnableCallbacks {
-		log.Println("Callbacks are disabled in configuration")
+		log.Println("配置中禁用了回调")
 		return nil
 	}
 
-	// Add custom debug handler if debug mode is enabled
+	// 如果启用调试模式，添加自定义调试处理器
 	if cm.config.System.Debug {
 		cm.handlers = append(cm.handlers, NewDebugCallbackHandler())
 	}
 
-	// Add custom logging handler
+	// 添加自定义日志处理器
 	cm.handlers = append(cm.handlers, NewLoggingCallbackHandler(cm.config.System.LogLevel))
 
-	// Add performance monitoring handler
+	// 添加性能监控处理器
 	cm.handlers = append(cm.handlers, NewPerformanceCallbackHandler())
 
-	// Future: Add Cozeloop handler
+	// 未来：添加Cozeloop处理器
 	// if cm.config.Callbacks.Cozeloop.Enabled {
 	//     handler, err := cm.createCozeloopHandler()
 	//     if err != nil {
@@ -51,7 +51,7 @@ func (cm *CallbackManager) Initialize(ctx context.Context) error {
 	//     }
 	// }
 
-	// Future: Add LangSmith handler
+	// 未来：添加LangSmith处理器
 	// if cm.config.Callbacks.LangSmith.Enabled {
 	//     handler, err := cm.createLangSmithHandler()
 	//     if err != nil {
@@ -61,21 +61,21 @@ func (cm *CallbackManager) Initialize(ctx context.Context) error {
 	//     }
 	// }
 
-	log.Printf("Initialized %d callback handlers", len(cm.handlers))
+	log.Printf("初始化了 %d 个回调处理器", len(cm.handlers))
 	return nil
 }
 
-// GetHandlers returns all configured handlers
+// GetHandlers 返回所有已配置的处理器
 func (cm *CallbackManager) GetHandlers() []callbacks.Handler {
 	return cm.handlers
 }
 
-// DebugCallbackHandler provides detailed debug information
+// DebugCallbackHandler 提供详细的调试信息
 type DebugCallbackHandler struct {
 	callbacks.SimpleCallbackHandler
 }
 
-// NewDebugCallbackHandler creates a new debug callback handler
+// NewDebugCallbackHandler 创建新的调试回调处理器
 func NewDebugCallbackHandler() *DebugCallbackHandler {
 	h := &DebugCallbackHandler{}
 
@@ -99,13 +99,13 @@ func NewDebugCallbackHandler() *DebugCallbackHandler {
 	return h
 }
 
-// LoggingCallbackHandler provides structured logging
+// LoggingCallbackHandler 提供结构化日志记录
 type LoggingCallbackHandler struct {
 	callbacks.SimpleCallbackHandler
 	logLevel string
 }
 
-// NewLoggingCallbackHandler creates a new logging callback handler
+// NewLoggingCallbackHandler 创建新的日志回调处理器
 func NewLoggingCallbackHandler(logLevel string) *LoggingCallbackHandler {
 	h := &LoggingCallbackHandler{logLevel: logLevel}
 
@@ -134,7 +134,7 @@ func NewLoggingCallbackHandler(logLevel string) *LoggingCallbackHandler {
 }
 
 func (h *LoggingCallbackHandler) shouldLog(level string) bool {
-	// Simple log level checking
+	// 简单的日志级别检查
 	levels := map[string]int{
 		"debug": 0,
 		"info":  1,
@@ -144,7 +144,7 @@ func (h *LoggingCallbackHandler) shouldLog(level string) bool {
 
 	configLevel, ok := levels[h.logLevel]
 	if !ok {
-		configLevel = 1 // default to info
+		configLevel = 1 // 默认为info
 	}
 
 	requestLevel, ok := levels[level]
@@ -155,13 +155,13 @@ func (h *LoggingCallbackHandler) shouldLog(level string) bool {
 	return requestLevel >= configLevel
 }
 
-// PerformanceCallbackHandler tracks performance metrics
+// PerformanceCallbackHandler 跟踪性能指标
 type PerformanceCallbackHandler struct {
 	callbacks.SimpleCallbackHandler
 	startTimes map[string]time.Time
 }
 
-// NewPerformanceCallbackHandler creates a new performance callback handler
+// NewPerformanceCallbackHandler 创建新的性能回调处理器
 func NewPerformanceCallbackHandler() *PerformanceCallbackHandler {
 	h := &PerformanceCallbackHandler{
 		startTimes: make(map[string]time.Time),
@@ -193,25 +193,25 @@ func NewPerformanceCallbackHandler() *PerformanceCallbackHandler {
 	return h
 }
 
-// StreamingCallbackHandler handles streaming outputs
+// StreamingCallbackHandler 处理流式输出
 type StreamingCallbackHandler struct {
 	callbacks.SimpleCallbackHandler
 	onChunk func(chunk string)
 }
 
-// NewStreamingCallbackHandler creates a new streaming callback handler
+// NewStreamingCallbackHandler 创建新的流式回调处理器
 func NewStreamingCallbackHandler(onChunk func(chunk string)) *StreamingCallbackHandler {
 	h := &StreamingCallbackHandler{
 		onChunk: onChunk,
 	}
 
-	// This would handle streaming chunks in a real implementation
-	// For now it's a placeholder for when we add streaming support
+	// 在真实实现中这将处理流式数据块
+	// 目前只是一个占位符，等待添加流式支持
 
 	return h
 }
 
-// Helper function to combine multiple handlers
+// CombineHandlers 组合多个处理器的辅助函数
 func CombineHandlers(handlers ...callbacks.Handler) callbacks.Handler {
 	if len(handlers) == 0 {
 		return &callbacks.SimpleCallbackHandler{}
@@ -220,8 +220,8 @@ func CombineHandlers(handlers ...callbacks.Handler) callbacks.Handler {
 		return handlers[0]
 	}
 
-	// In a real implementation, we would properly combine handlers
-	// For now, return the first non-nil handler
+	// 在真实实现中，我们会正确组合处理器
+	// 现在返回第一个非空处理器
 	for _, h := range handlers {
 		if h != nil {
 			return h
@@ -230,10 +230,10 @@ func CombineHandlers(handlers ...callbacks.Handler) callbacks.Handler {
 	return &callbacks.SimpleCallbackHandler{}
 }
 
-// Future implementations for external callback services
+// 外部回调服务的未来实现
 
-// createCozeloopHandler creates a Cozeloop callback handler
-// This would be implemented when eino-ext/callbacks/cozeloop is available
+// createCozeloopHandler 创建Cozeloop回调处理器
+// 当eino-ext/callbacks/cozeloop可用时将实现
 /*
 func (cm *CallbackManager) createCozeloopHandler() (callbacks.Handler, error) {
 	import "github.com/cloudwego/eino-ext/callbacks/cozeloop"
@@ -250,8 +250,8 @@ func (cm *CallbackManager) createCozeloopHandler() (callbacks.Handler, error) {
 }
 */
 
-// createLangSmithHandler creates a LangSmith callback handler
-// This would be implemented when eino-ext/callbacks/langsmith is available
+// createLangSmithHandler 创建LangSmith回调处理器
+// 当eino-ext/callbacks/langsmith可用时将实现
 /*
 func (cm *CallbackManager) createLangSmithHandler() (callbacks.Handler, error) {
 	import "github.com/cloudwego/eino-ext/callbacks/langsmith"

@@ -7,7 +7,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-// ExecutionPlan represents a complex execution plan with dependencies and parallel steps
+// ExecutionPlan 表示具有依赖关系和并行步骤的复杂执行计划
 type ExecutionPlan struct {
 	ID        string              `json:"id"`
 	CreatedAt time.Time           `json:"created_at"`
@@ -16,7 +16,7 @@ type ExecutionPlan struct {
 	DataFlow  map[string][]string `json:"data_flow,omitempty"` // step_id -> dependent_step_ids
 }
 
-// ExecutionStep represents a single step in the execution plan
+// ExecutionStep 表示执行计划中的单个步骤
 type ExecutionStep struct {
 	ID           string                 `json:"id"`
 	Type         StepType               `json:"type"`
@@ -27,10 +27,10 @@ type ExecutionStep struct {
 	Dependencies []string               `json:"dependencies"`
 	RetryPolicy  *RetryPolicy           `json:"retry_policy,omitempty"`
 	ErrorPolicy  ErrorHandlingPolicy    `json:"error_policy,omitempty"`
-	Parallel     bool                   `json:"parallel,omitempty"` // Can be executed in parallel with other steps
+	Parallel     bool                   `json:"parallel,omitempty"` // 可以与其他步骤并行执行
 }
 
-// StepType defines the type of execution step
+// StepType 定义执行步骤的类型
 type StepType string
 
 const (
@@ -42,7 +42,7 @@ const (
 	StepTypeParallel       StepType = "parallel"
 )
 
-// ErrorHandlingPolicy defines how to handle errors
+// ErrorHandlingPolicy 定义如何处理错误
 type ErrorHandlingPolicy string
 
 const (
